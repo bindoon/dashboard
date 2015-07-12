@@ -1,4 +1,4 @@
-// Generated on 2015-06-14 using generator-angular 0.11.1
+// Generated on 2014-10-28 using generator-angular 0.9.8
 'use strict';
 
 // # Globbing
@@ -18,7 +18,8 @@ module.exports = function (grunt) {
   // Configurable paths for the application
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
-    dist: 'dist'
+    dist: 'demo',
+    build:'build'
   };
 
   // Define the configuration for all the tasks
@@ -60,7 +61,12 @@ module.exports = function (grunt) {
           '.tmp/styles/{,*/}*.css',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
-      }
+      },
+        template: {
+            files:['<%= yeoman.app %>/views/*.html'],
+            tasks: ['ngtemplates']
+
+        }
     },
 
     // The actual grunt server settings
@@ -80,10 +86,6 @@ module.exports = function (grunt) {
               connect().use(
                 '/bower_components',
                 connect.static('./bower_components')
-              ),
-              connect().use(
-                '/app/styles',
-                connect.static('./app/styles')
               ),
               connect.static(appConfig.app)
             ];
@@ -142,28 +144,18 @@ module.exports = function (grunt) {
           src: [
             '.tmp',
             '<%= yeoman.dist %>/{,*/}*',
-            '!<%= yeoman.dist %>/.git{,*/}*'
+            '!<%= yeoman.dist %>/.git*'
           ]
         }]
       },
-      server: '.tmp'
+      server: '.tmp',
+      build: '<%= yeoman.build %>/**/*'
     },
 
     // Add vendor prefixed styles
     autoprefixer: {
       options: {
         browsers: ['last 1 version']
-      },
-      server: {
-        options: {
-          map: true,
-        },
-        files: [{
-          expand: true,
-          cwd: '.tmp/styles/',
-          src: '{,*/}*.css',
-          dest: '.tmp/styles/'
-        }]
       },
       dist: {
         files: [{
@@ -175,30 +167,14 @@ module.exports = function (grunt) {
       }
     },
 
-    // Automatically inject Bower components into the app
+    // Automatically inject Bower components into the app,bower install XXX then grunt wiredep
     wiredep: {
       app: {
         src: ['<%= yeoman.app %>/index.html'],
         ignorePath:  /\.\.\//
       },
-      test: {
-        devDependencies: true,
-        src: '<%= karma.unit.configFile %>',
-        ignorePath:  /\.\.\//,
-        fileTypes:{
-          js: {
-            block: /(([\s\t]*)\/{2}\s*?bower:\s*?(\S*))(\n|\r|.)*?(\/{2}\s*endbower)/gi,
-              detect: {
-                js: /'(.*\.js)'/gi
-              },
-              replace: {
-                js: '\'{{filePath}}\','
-              }
-            }
-          }
-      },
       sass: {
-        src: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
+        src: ['<%= yeoman.app %>/styles/main.scss'],  //{,*/}*.{scss,sass}
         ignorePath: /(\.\.\/){1,2}bower_components\//
       }
     },
@@ -227,7 +203,7 @@ module.exports = function (grunt) {
       },
       server: {
         options: {
-          sourcemap: true
+          debugInfo: true
         }
       }
     },
@@ -268,11 +244,7 @@ module.exports = function (grunt) {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
-        assetsDirs: [
-          '<%= yeoman.dist %>',
-          '<%= yeoman.dist %>/images',
-          '<%= yeoman.dist %>/styles'
-        ]
+        assetsDirs: ['<%= yeoman.dist %>','<%= yeoman.dist %>/images']
       }
     },
 
@@ -349,7 +321,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '.tmp/concat/scripts',
-          src: '*.js',
+          src: ['*.js', '!oldieshim.js'],
           dest: '.tmp/concat/scripts'
         }]
       }
@@ -374,20 +346,16 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '.htaccess',
             '*.html',
-            'views/{,*/}*.html',
+           // 'views/{,*/}*.html',
             'images/{,*/}*.{webp}',
-            'styles/fonts/{,*/}*.*'
+            'fonts/*',
+            'api/*'
           ]
         }, {
           expand: true,
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
-        }, {
-          expand: true,
-          cwd: '.',
-          src: 'bower_components/bootstrap-sass-official/assets/fonts/bootstrap/*',
-          dest: '<%= yeoman.dist %>'
         }]
       },
       styles: {
@@ -395,6 +363,30 @@ module.exports = function (grunt) {
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      build: {
+        files:[
+          {
+              expand: true,
+              cwd: '<%= yeoman.dist %>/styles',
+              src: '*.css',
+              dest: '<%= yeoman.build %>/styles',
+              ext: '.css'
+          },
+          {
+              expand: true,
+              cwd: '.tmp/concat/scripts',
+              src: '*.js',
+              dest: '<%= yeoman.build %>/scripts',
+              ext: '.map.js'
+          },{
+              expand: true,
+              cwd: '<%= yeoman.dist %>/scripts',
+              src: '*.js',
+              dest: '<%= yeoman.build %>/scripts',
+              ext: '.js'
+          }
+        ]
       }
     },
 
@@ -407,9 +399,9 @@ module.exports = function (grunt) {
         'compass'
       ],
       dist: [
-        'compass:dist',
-        'imagemin',
-        'svgmin'
+        'compass:dist'//,
+       // 'imagemin',
+       // 'svgmin'
       ]
     },
 
@@ -419,6 +411,27 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
+    },
+
+    ngtemplates:  {
+        app: {
+            cwd:      '<%= yeoman.app %>',
+            src:      'views/*.html',
+            dest:     '<%= yeoman.app %>/scripts/templates/base.js',
+            options:    {
+                htmlmin:  {
+                    collapseWhitespace: true,
+                    collapseBooleanAttributes: true,
+                    removeAttributeQuotes:          true,
+                    removeComments:                 true, // Only if you don't use comment directives!
+                    removeEmptyAttributes:          true,
+                    removeRedundantAttributes:      true,
+                    removeScriptTypeAttributes:     true,
+                    removeStyleLinkTypeAttributes:  true
+                },
+                module: require('./bower.json').name + "App"
+            }
+        }
     }
   });
 
@@ -430,9 +443,10 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
-      'wiredep',
+     // 'wiredep',
+      'ngtemplates',
       'concurrent:server',
-      'autoprefixer:server',
+      'autoprefixer',
       'connect:livereload',
       'watch'
     ]);
@@ -445,28 +459,34 @@ module.exports = function (grunt) {
 
   grunt.registerTask('test', [
     'clean:server',
-    'wiredep',
     'concurrent:test',
     'autoprefixer',
     'connect:test',
     'karma'
   ]);
 
-  grunt.registerTask('build', [
+  grunt.registerTask('demo', [
     'clean:dist',
-    'wiredep',
+   // 'wiredep',
+    'ngtemplates',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
     'concat',
     'ngAnnotate',
     'copy:dist',
-    'cdnify',
+   // 'cdnify',
     'cssmin',
     'uglify',
     'filerev',
-    'usemin',
-    'htmlmin'
+    'usemin'//,
+   // 'htmlmin'
+  ]);
+
+  grunt.registerTask('build', [
+    'clean:build',
+    'demo',
+    'copy:build'
   ]);
 
   grunt.registerTask('default', [
