@@ -23,7 +23,7 @@ angular.module('dashboardApp')
             $scope.currentActiveRoute  = $location.path();
         });
 
-        var apiUrl = 'http://localhost:3000/dbcfg';
+        var apiUrl = 'http://'+location.host.split(':')[0]+':3000/dbcfg';
         $scope.condition = {};
 
         $scope.showAdd = false;
