@@ -63,6 +63,7 @@ angular.module('dashboardApp')
                 $scope.columns = data.result.columns;
                 $scope.list = data.result.list;
                 $scope.condition = data.result.condition;
+                $scope.showAdd = false;
             });
         }
         queryData();
