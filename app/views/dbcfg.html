@@ -64,7 +64,7 @@
                     <th class="tc" width="5%"><input class="allChoose" type="checkbox" ng-model="selectAllAdd" ></th>
                     <th ng-repeat="column in columns" >{{column.name}}</th>
                 </tr>
-                <tr ng-repeat="item in [0,1,2,3,4,5]" class="J-data-add">
+                <tr ng-repeat="item in [0,1,2,3,4,5]" class="J-data-list">
                     <td class="tc"><input type="checkbox" ng-checked="selectAllAdd" class="J-selected" ></td>
                     <td ng-repeat="column in columns" ><input name="{{column.name}}"></td>
                 </tr>
