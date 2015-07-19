@@ -60,10 +60,14 @@ angular.module('dashboardApp')
                 table: $routeParams.table,
                 condition:JSON.stringify($scope.condition)
             }).then(function(data){
-                $scope.columns = data.result.columns;
-                $scope.list = data.result.list;
-                $scope.condition = data.result.condition;
-                $scope.showAdd = false;
+                if (data.result) {
+                    $scope.columns = data.result.columns;
+                    $scope.list = data.result.list;
+                    $scope.condition = data.result.condition;
+                    $scope.showAdd = false;
+                } else {
+                    onMsgBox(data.error.msg,'error');
+                }
             });
         }
         queryData();
@@ -150,7 +154,9 @@ angular.module('dashboardApp')
                 if (data.result&&data.result.code==0) {
                     onMsgBox(data.result.msg,'success');
                     queryData();
-                };
+                } else {
+                    onMsgBox(data.error.msg,'error');
+                }
             })
         }
 
