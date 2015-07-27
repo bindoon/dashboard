@@ -175,4 +175,25 @@ angular.module('dashboardApp')
 
             queryData();
         }
+
+        $scope.saveColumnMap = function() {
+            var list = getSelectList('editColumn');
+            if (list.length==0) {
+                onMsgBox('请至少勾选一个需要修改的数据');
+                return;
+            };
+
+            dealData({
+                op:'dbcfg',
+                table:$routeParams.table,
+                list:JSON.stringify(list)
+            }).then(function(data){
+                if (data.result&&data.result.code==0) {
+                    onMsgBox(data.result.msg,'success');
+                    queryData();
+                } else {
+                    onMsgBox(data.error.msg,'error');
+                }
+            })
+        }
   }]);

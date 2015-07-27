@@ -3,6 +3,46 @@
   <li><a href="#">Library</a></li>
   <li class="active">Data</li>
 </ol>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" style="  float: right;
+  margin-top: -50px;
+  margin-right: 20px;" data-toggle="modal" data-target="#myModal">
+  映射配置
+</button>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h5 class="modal-title" id="myModalLabel">映射配置</h5>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped" id="editColumn">
+            <thead>
+                <tr>
+                    <th class="tc" width="5%"><input class="allChoose" type="checkbox" ng-model="selectAllColumn" ></th>
+                    <th >列名称</th>
+                    <th >映射名称</th>
+                    <th >类别</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="column in columns" class="J-data-list">
+                    <td class="tc"><input type="checkbox" ng-checked="selectAllColumn" class="J-selected" ></td>
+                    <td>{{column.name}}<input type="hidden" name="column" value="{{column.name}}" ></td>
+                    <td ><input name="mapname" value="{{column.mapname}}" ></td>
+                    <td ><input name="ctype"  value="{{column.ctype}}" ></td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn-lg" data-ok="modal" ng-click="saveColumnMap()">保存</button>
+        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="search-wrap">
     <div class="search-content">
@@ -10,7 +50,7 @@
             <table class="table table-striped">
                 <tbody>
                     <tr>
-                        <td ng-repeat="column in columns" >{{column.name}}:<input name="{{column.name}}" value="{{condition[column.name]}}" ></td>
+                        <td ng-repeat="column in columns" >{{column.mapname}}:<input name="{{column.name}}" value="{{condition[column.name]}}" ></td>
                     </tr>
                 </tbody>
             </table>
@@ -33,7 +73,7 @@
                 <thead>
                     <tr>
                         <th class="tc" width="5%"><input class="allChoose" type="checkbox" ng-model="selectAll" ></th>
-                        <th ng-repeat="column in columns" >{{column.name}}</th>
+                        <th ng-repeat="column in columns" >{{column.mapname}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,7 +102,7 @@
                 <tbody>
                 <tr>
                     <th class="tc" width="5%"><input class="allChoose" type="checkbox" ng-model="selectAllAdd" ></th>
-                    <th ng-repeat="column in columns" >{{column.name}}</th>
+                    <th ng-repeat="column in columns" >{{column.mapname}}</th>
                 </tr>
                 <tr ng-repeat="item in [0,1,2]" class="J-data-list">
                     <td class="tc"><input type="checkbox" ng-checked="selectAllAdd" class="J-selected" ></td>
@@ -74,4 +114,6 @@
         <button type="button" class="btn btn-primary btn-lg" ng-click="submitData()">提交</button>
         <button type="button" class="btn btn-default btn-lg" ng-click="showAdd=false">取消</button>
     </form>
+
+
 </div>
