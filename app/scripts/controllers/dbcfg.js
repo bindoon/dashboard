@@ -28,6 +28,17 @@ angular.module('dashboardApp')
 
         $scope.showAdd = false;
 
+        $scope.myOptions = [
+            {
+                "id": 1,
+                "label": "输入框"
+            },
+            {
+                "id": 2,
+                "label": "选择框"
+            }
+        ];
+
         function onMsgBox(msg,type) {
             $rootScope.$broadcast('msgBox', {
                 msg: {
@@ -61,7 +72,14 @@ angular.module('dashboardApp')
                 condition:JSON.stringify($scope.condition)
             }).then(function(data){
                 if (data.result) {
-                    $scope.columns = data.result.columns;
+                    var columns = data.result.columns;
+                    for (var i = 0; i < columns.length; i++) {
+                        var column = columns[i];
+                        column.ctype = column.ctype||1;
+                        column.configStr = column.config? JSON.stringify(column.config):'';
+                    };
+
+                    $scope.columns = columns;
                     $scope.list = data.result.list;
                     $scope.condition = data.result.condition;
                     $scope.showAdd = false;
@@ -88,7 +106,7 @@ angular.module('dashboardApp')
                 if (!checkbox.prop('checked')) {
                     return;
                 };
-                $(this).find('input').each(function(){
+                $(this).find('input,select').each(function(){
                     var name = $(this).attr('name');
                     if (!name) {
                         return;

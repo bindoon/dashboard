@@ -10,7 +10,7 @@
   映射配置
 </button>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog" style="width:800px;">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -24,6 +24,7 @@
                     <th >列名称</th>
                     <th >映射名称</th>
                     <th >类别</th>
+                    <th >配置</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +32,12 @@
                     <td class="tc"><input type="checkbox" ng-checked="selectAllColumn" class="J-selected" ></td>
                     <td>{{column.name}}<input type="hidden" name="column" value="{{column.name}}" ></td>
                     <td ><input name="mapname" value="{{column.mapname}}" ></td>
-                    <td ><input name="ctype"  value="{{column.ctype}}" ></td>
+                    <td >
+                        <select name="ctype" >
+                            <option ng-repeat="value in myOptions" value="{{value.id}}" ng-selected="value.id==column.ctype">{{value.label}}</option>
+                        </selected>
+                    </td>
+                    <td ><input name="config"  value="{{column.configStr}}" ></td>
                 </tr>
             </tbody>
         </table>
@@ -79,7 +85,9 @@
                 <tbody>
                 <tr ng-repeat="item in list" class="J-data-list">
                     <td class="tc"><input type="checkbox" ng-checked="selectAll" class="J-selected" ><input type="hidden" name="_id" value="{{item._id}}" /></td>
-                    <td ng-repeat="column in columns" ><input name="{{column.name}}" value="{{item[column.name]}}" ></td>
+                    <td ng-repeat="column in columns" ><input ng-if="column.ctype==1" name="{{column.name}}" value="{{item[column.name]}}" ><select ng-if="column.ctype==2" name="{{column.name}}"  d="{{item[column.name]}}">
+                            <option ng-repeat="value in column.config.value" value="{{value.k}}" ng-selected="value.k==item[column.name]">{{value.v}}</option>
+                    </select></td>
                 </tr>
                 </tbody>
             </table>
@@ -106,7 +114,12 @@
                 </tr>
                 <tr ng-repeat="item in [0,1,2]" class="J-data-list">
                     <td class="tc"><input type="checkbox" ng-checked="selectAllAdd" class="J-selected" ></td>
-                    <td ng-repeat="column in columns" ><input name="{{column.name}}"></td>
+                    <td ng-repeat="column in columns" >
+                        <input ng-if="column.ctype==1" name="{{column.name}}" value="{{item[column.name]}}" >
+                        <select ng-if="column.ctype==2" name="{{column.name}}"  d="{{item[column.name]}}">
+                            <option ng-repeat="value in column.config.value" value="{{value.k}}" ng-selected="value.k==item[column.name]">{{value.v}}</option>
+                        </select>
+                    </td>
                 </tr>
                 </tbody>
             </table>
