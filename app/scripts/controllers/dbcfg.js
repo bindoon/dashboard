@@ -8,8 +8,11 @@
  * Controller of the angularApp
  */
 angular.module('dashboardApp')
-  .controller('DbCfgCtrl', ['$scope','$rootScope','$http','$q','$routeParams','$location',function ($scope, $rootScope, $http, $q,$routeParams,$location) {
+  .controller('DbCfgCtrl', ['$scope','$rootScope','$http','$q','$routeParams','$location' ,function ($scope, $rootScope, $http, $q,$routeParams,$location) {
     
+    // $scope.htmlcontent = 'test';
+    //         $scope.disabled = false;
+
         $rootScope.checkActive   = function(currentActiveRoute, route){
             if(route === '/'){
                 return currentActiveRoute === route;
@@ -36,6 +39,10 @@ angular.module('dashboardApp')
             {
                 "id": 2,
                 "label": "选择框"
+            },
+            {
+                "id": 3,
+                "label": "富文本编辑"
             }
         ];
 
@@ -106,7 +113,7 @@ angular.module('dashboardApp')
                 if (!checkbox.prop('checked')) {
                     return;
                 };
-                $(this).find('input,select').each(function(){
+                $(this).find('input,select,textarea').each(function(){
                     var name = $(this).attr('name');
                     if (!name) {
                         return;

@@ -176,6 +176,41 @@ angular.module('dashboardApp')
             }
         }
     ])
+    .directive('editorContainer',['$rootScope',function(rootScope){
+        return {
+            restrict: 'A',
+            scope: true,
+            replace:true,
+            templateUrl: 'views/editor.html',
+
+            link: function ($scope,element,attrs) { 
+
+                $scope.target = null;
+                //确认按钮
+                $scope.saveContent=  function(){
+                    $scope.target.val($scope.htmlcontent);
+                    $scope.disabled = true;
+                };
+                rootScope.$on('showEditor',function(event, target) {
+                    element.modal('show');
+                    $scope.target = target;
+                    $scope.htmlcontent = target.val();
+                    $scope.disabled = false;
+                })
+            }
+        }
+    }])
+    .directive('editor', ['$rootScope',function(rootScope){
+        return {
+            restrict: 'A',
+            scope: true,
+            link: function (scope, element, attrs, editorContainer) { 
+                element.on('click',function(){
+                    rootScope.$broadcast('showEditor',element);
+                })
+            }
+        }
+    }])
 ;
 
 

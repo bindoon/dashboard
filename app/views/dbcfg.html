@@ -37,7 +37,7 @@
                             <option ng-repeat="value in myOptions" value="{{value.id}}" ng-selected="value.id==column.ctype">{{value.label}}</option>
                         </selected>
                     </td>
-                    <td ><input name="config"  value="{{column.configStr}}" ></td>
+                    <td ><textarea name="config" >{{column.configStr}}</textarea></td>
                 </tr>
             </tbody>
         </table>
@@ -87,7 +87,9 @@
                     <td class="tc"><input type="checkbox" ng-checked="selectAll" class="J-selected" ><input type="hidden" name="_id" value="{{item._id}}" /></td>
                     <td ng-repeat="column in columns" ><input ng-if="column.ctype==1" name="{{column.name}}" value="{{item[column.name]}}" ><select ng-if="column.ctype==2" name="{{column.name}}"  d="{{item[column.name]}}">
                             <option ng-repeat="value in column.config.value" value="{{value.k}}" ng-selected="value.k==item[column.name]">{{value.v}}</option>
-                    </select></td>
+                    </select>
+                    <textarea ng-if="column.ctype==3" name="{{column.name}}" editor ng-click="openEditor(this)" >{{item[column.name]}}</textarea>
+                </td>
                 </tr>
                 </tbody>
             </table>
@@ -119,6 +121,7 @@
                         <select ng-if="column.ctype==2" name="{{column.name}}"  d="{{item[column.name]}}">
                             <option ng-repeat="value in column.config.value" value="{{value.k}}" ng-selected="value.k==item[column.name]">{{value.v}}</option>
                         </select>
+                        <textarea ng-if="column.ctype==3" name="{{column.name}}" editor ></textarea>
                     </td>
                 </tr>
                 </tbody>
@@ -127,6 +130,7 @@
         <button type="button" class="btn btn-primary btn-lg" ng-click="submitData()">提交</button>
         <button type="button" class="btn btn-default btn-lg" ng-click="showAdd=false">取消</button>
     </form>
+
 
 
 </div>
