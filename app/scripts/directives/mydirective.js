@@ -211,6 +211,37 @@ angular.module('dashboardApp')
             }
         }
     }])
+    .directive('jsoneditorContainer',['$rootScope',function(rootScope){
+        return {
+            restrict: 'A',
+            scope: true,
+            replace:true,
+            templateUrl: 'views/jsoneditor.html',
+
+            link: function ($scope,element,attrs) { 
+
+                rootScope.$on('showjsonEditor',function(event, target) {
+                    element.modal('show');
+                    var json = JSON.parse(target.val());
+                    element.find('.json-editor').jsonEditor(json,{ change: function(newjson) {  
+                        target.val(JSON.stringify(newjson));  
+                    }});
+                })
+            }
+        }
+    }])
+    .directive('jsoneditor', ['$rootScope',function(rootScope){
+        return {
+            restrict: 'A',
+            scope: true,
+            link: function (scope, element, attrs, editorContainer) { 
+                element.on('click',function(){
+                    rootScope.$broadcast('showjsonEditor',element);
+                })
+            }
+        }
+    }])
+
 ;
 
 

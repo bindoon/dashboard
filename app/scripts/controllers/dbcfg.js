@@ -83,7 +83,6 @@ angular.module('dashboardApp')
                     for (var i = 0; i < columns.length; i++) {
                         var column = columns[i];
                         column.ctype = column.ctype||1;
-                        column.configStr = column.config? JSON.stringify(column.config):'';
                     };
 
                     $scope.columns = columns;

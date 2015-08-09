@@ -37,7 +37,7 @@
                             <option ng-repeat="value in myOptions" value="{{value.id}}" ng-selected="value.id==column.ctype">{{value.label}}</option>
                         </selected>
                     </td>
-                    <td ><textarea name="config" >{{column.configStr}}</textarea></td>
+                    <td ><textarea name="config" jsoneditor >{{column.config}}</textarea></td>
                 </tr>
             </tbody>
         </table>
@@ -86,7 +86,7 @@
                 <tr ng-repeat="item in list" class="J-data-list">
                     <td class="tc"><input type="checkbox" ng-checked="selectAll" class="J-selected" ><input type="hidden" name="_id" value="{{item._id}}" /></td>
                     <td ng-repeat="column in columns" ><input ng-if="column.ctype==1" name="{{column.name}}" value="{{item[column.name]}}" ><select ng-if="column.ctype==2" name="{{column.name}}"  d="{{item[column.name]}}">
-                            <option ng-repeat="value in column.config.value" value="{{value.k}}" ng-selected="value.k==item[column.name]">{{value.v}}</option>
+                            <option ng-repeat="value in column.configValue" value="{{value.v}}" ng-selected="value.v==item[column.name]">{{value.n}}</option>
                     </select>
                     <textarea ng-if="column.ctype==3" name="{{column.name}}" editor ng-click="openEditor(this)" >{{item[column.name]}}</textarea>
                 </td>
@@ -119,7 +119,7 @@
                     <td ng-repeat="column in columns" >
                         <input ng-if="column.ctype==1" name="{{column.name}}" value="{{item[column.name]}}" >
                         <select ng-if="column.ctype==2" name="{{column.name}}"  d="{{item[column.name]}}">
-                            <option ng-repeat="value in column.config.value" value="{{value.k}}" ng-selected="value.k==item[column.name]">{{value.v}}</option>
+                            <option ng-repeat="value in column.configValue" value="{{value.v}}" ng-selected="value.v==item[column.name]">{{value.n}}</option>
                         </select>
                         <textarea ng-if="column.ctype==3" name="{{column.name}}" editor ></textarea>
                     </td>
