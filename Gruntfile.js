@@ -385,6 +385,12 @@ module.exports = function (grunt) {
               src: '*.js',
               dest: '<%= yeoman.build %>/scripts',
               ext: '.js'
+          },
+          {
+              expand: true,
+              cwd: '<%= yeoman.dist %>/../bower_components/font-awesome',
+              src: 'fonts/**',
+              dest: '<%= yeoman.build %>/styles/'
           }
         ]
       }
