@@ -4,7 +4,7 @@
   <li class="active">Data</li>
 </ol>
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" style="  float: right;
+<button type="button" class="btn btn-primary btn-sm" style="  float: right;
   margin-top: -50px;
   margin-right: 20px;" data-toggle="modal" data-target="#myModal">
   映射配置
@@ -43,8 +43,8 @@
         </table>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary btn-lg" data-ok="modal" ng-click="saveColumnMap()">保存</button>
-        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary " data-ok="modal" ng-click="saveColumnMap()">保存</button>
+        <button type="button" class="btn btn-default " data-dismiss="modal">取消</button>
       </div>
     </div>
   </div>
@@ -60,7 +60,7 @@
                     </tr>
                 </tbody>
             </table>
-            <input class="btn btn-primary" value="搜索" type="submit" ng-click="searchOnclick()">
+            <input class="btn btn-primary btn-sm" value="搜索" type="submit" ng-click="searchOnclick()">
         </form>
     </div>
 </div>
@@ -102,7 +102,8 @@
                 <a href="javascript:void(0)" ng-click="deleteDataOnclick()"><i class="icon-font"></i>批量删除</a>
             </div>
         </div>
-        <div class="list-page"> 2 条 1/1 页</div>
+        <pagination total-items="pagination.totalItems" ng-hide="pagination.totalPage==1" items-per-page="pagination.itemsPerPage" boundary-links="true" ng-model="pagination.currentPage" ng-change="pageChanged()"
+                previous-text="上一页" next-text="下一页" first-text="<<" last-text=">>" max-size="10"></pagination>
 
     </form>
 

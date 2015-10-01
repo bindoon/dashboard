@@ -16,7 +16,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'textAngular'
+    'textAngular',
+    'ui.bootstrap'
   ])
   .config(["$routeProvider", function ($routeProvider) {
     $routeProvider
@@ -62,7 +63,7 @@ angular.module('dashboardApp')
  */
 angular.module('dashboardApp')
   .controller('DbCfgCtrl', ['$scope','$rootScope','$http','$q','$routeParams','$location' ,function ($scope, $rootScope, $http, $q,$routeParams,$location) {
-    
+
     // $scope.htmlcontent = 'test';
     //         $scope.disabled = false;
 
@@ -81,7 +82,11 @@ angular.module('dashboardApp')
 
         var apiUrl = 'http://'+location.host.split(':')[0]+':3000/dbcfg';
         $scope.condition = {};
-
+        $scope.pagination = {
+            totalItems:0,
+            currentPage: 1,
+            totalPage:1
+        }
         $scope.showAdd = false;
 
         $scope.myOptions = [
@@ -106,7 +111,7 @@ angular.module('dashboardApp')
                     type: type||"error"
                 },
                 time: 3000,
-            });                    
+            });
         }
         function dealData(param){
             var defer = $q.defer();
@@ -125,11 +130,12 @@ angular.module('dashboardApp')
 
             return defer.promise;
         }
-        function queryData() {       
+        function queryData() {
             dealData({
                 op:'query',
                 table: $routeParams.table,
-                condition:JSON.stringify($scope.condition)
+                condition:JSON.stringify($scope.condition),
+                pagination:JSON.stringify($scope.pagination),
             }).then(function(data){
                 if (data.result) {
                     var columns = data.result.columns;
@@ -141,6 +147,7 @@ angular.module('dashboardApp')
                     $scope.columns = columns;
                     $scope.list = data.result.list;
                     $scope.condition = data.result.condition;
+                    $scope.pagination = data.result.pagination;
                     $scope.showAdd = false;
                 } else {
                     onMsgBox(data.error.msg,'error');
@@ -272,6 +279,10 @@ angular.module('dashboardApp')
                     onMsgBox(data.error.msg,'error');
                 }
             })
+        }
+
+        $scope.pageChanged = function() {
+            queryData();
         }
   }]);
 
@@ -533,9 +544,9 @@ angular.module('dashboardApp').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/dbcfg.html',
-    "<ol class=breadcrumb><li><a href=#>Home</a></li><li><a href=#>Library</a></li><li class=active>Data</li></ol><button type=button class=\"btn btn-primary\" style=\"float: right;\n" +
+    "<ol class=breadcrumb><li><a href=#>Home</a></li><li><a href=#>Library</a></li><li class=active>Data</li></ol><button type=button class=\"btn btn-primary btn-sm\" style=\"float: right;\n" +
     "  margin-top: -50px;\n" +
-    "  margin-right: 20px\" data-toggle=modal data-target=#myModal>映射配置</button><div class=\"modal fade\" id=myModal tabindex=-1 role=dialog aria-labelledby=myModalLabel aria-hidden=true><div class=modal-dialog style=width:800px><div class=modal-content><div class=modal-header><button type=button class=close data-dismiss=modal aria-label=Close><span aria-hidden=true>&times;</span></button><h5 class=modal-title id=myModalLabel>映射配置</h5></div><div class=modal-body><table class=\"table table-striped\" id=editColumn><thead><tr><th class=tc width=5%><input class=allChoose type=checkbox ng-model=selectAllColumn></th><th>列名称</th><th>映射名称</th><th>类别</th><th>配置</th></tr></thead><tbody><tr ng-repeat=\"column in columns\" class=J-data-list><td class=tc><input type=checkbox ng-checked=selectAllColumn class=J-selected></td><td>{{column.name}}<input type=hidden name=column value={{column.name}}></td><td><input name=mapname value={{column.mapname}}></td><td><select name=ctype><option ng-repeat=\"value in myOptions\" value={{value.id}} ng-selected=\"value.id==column.ctype\">{{value.label}}</option></select></td><td><textarea name=config jsoneditor>{{column.config}}</textarea></td></tr></tbody></table></div><div class=modal-footer><button type=button class=\"btn btn-primary btn-lg\" data-ok=modal ng-click=saveColumnMap()>保存</button> <button type=button class=\"btn btn-default btn-lg\" data-dismiss=modal>取消</button></div></div></div></div><div class=search-wrap><div class=search-content><form id=myform_search method=post><table class=\"table table-striped\"><tbody><tr><td ng-repeat=\"column in columns\">{{column.mapname}}:<input name={{column.name}} value={{condition[column.name]}}></td></tr></tbody></table><input class=\"btn btn-primary\" value=搜索 type=submit ng-click=searchOnclick()></form></div></div><div class=result-wrap><form name=myform id=myform method=post><div class=result-title><div class=result-list><a ng-click=addDataOnclick() href=javascript:;><i class=icon-font></i>新增数据</a> <a href=javascript:void(0) ng-click=modifyDataOnclick()><i class=icon-font></i>批量更新</a> <a href=javascript:void(0) ng-click=deleteDataOnclick()><i class=icon-font></i>批量删除</a></div></div><div class=result-content><table class=\"table table-striped table-bordered\"><thead><tr><th class=tc width=5%><input class=allChoose type=checkbox ng-model=selectAll></th><th ng-repeat=\"column in columns\">{{column.mapname}}</th></tr></thead><tbody><tr ng-repeat=\"item in list\" class=J-data-list><td class=tc><input type=checkbox ng-checked=selectAll class=J-selected><input type=hidden name=_id value=\"{{item._id}}\"></td><td ng-repeat=\"column in columns\"><input ng-if=\"column.ctype==1\" name={{column.name}} value={{item[column.name]}}><select ng-if=\"column.ctype==2\" name={{column.name}} d={{item[column.name]}}><option ng-repeat=\"value in column.configValue\" value={{value.v}} ng-selected=\"value.v==item[column.name]\">{{value.n}}</option></select><textarea ng-if=\"column.ctype==3\" name={{column.name}} editor ng-click=openEditor(this)>{{item[column.name]}}</textarea></td></tr></tbody></table></div><div class=result-title><div class=result-list><a ng-click=addDataOnclick(); href=javascript:;><i class=icon-font></i>新增数据</a> <a href=javascript:void(0) ng-click=modifyDataOnclick()><i class=icon-font></i>批量更新</a> <a href=javascript:void(0) ng-click=deleteDataOnclick()><i class=icon-font></i>批量删除</a></div></div><div class=list-page>2 条 1/1 页</div></form><form name=myform id=myform_add method=post ng-show=showAdd><div class=result-content><table class=\"table table-striped table-bordered\" width=100%><tbody><tr><th class=tc width=5%><input class=allChoose type=checkbox ng-model=selectAllAdd></th><th ng-repeat=\"column in columns\">{{column.mapname}}</th></tr><tr ng-repeat=\"item in [0,1,2]\" class=J-data-list><td class=tc><input type=checkbox ng-checked=selectAllAdd class=J-selected></td><td ng-repeat=\"column in columns\"><input ng-if=\"column.ctype==1\" name={{column.name}} value={{item[column.name]}}><select ng-if=\"column.ctype==2\" name={{column.name}} d={{item[column.name]}}><option ng-repeat=\"value in column.configValue\" value={{value.v}} ng-selected=\"value.v==item[column.name]\">{{value.n}}</option></select><textarea ng-if=\"column.ctype==3\" name={{column.name}} editor></textarea></td></tr></tbody></table></div><button type=button class=\"btn btn-primary btn-lg\" ng-click=submitData()>提交</button> <button type=button class=\"btn btn-default btn-lg\" ng-click=\"showAdd=false\">取消</button></form></div>"
+    "  margin-right: 20px\" data-toggle=modal data-target=#myModal>映射配置</button><div class=\"modal fade\" id=myModal tabindex=-1 role=dialog aria-labelledby=myModalLabel aria-hidden=true><div class=modal-dialog style=width:800px><div class=modal-content><div class=modal-header><button type=button class=close data-dismiss=modal aria-label=Close><span aria-hidden=true>&times;</span></button><h5 class=modal-title id=myModalLabel>映射配置</h5></div><div class=modal-body><table class=\"table table-striped\" id=editColumn><thead><tr><th class=tc width=5%><input class=allChoose type=checkbox ng-model=selectAllColumn></th><th>列名称</th><th>映射名称</th><th>类别</th><th>配置</th></tr></thead><tbody><tr ng-repeat=\"column in columns\" class=J-data-list><td class=tc><input type=checkbox ng-checked=selectAllColumn class=J-selected></td><td>{{column.name}}<input type=hidden name=column value={{column.name}}></td><td><input name=mapname value={{column.mapname}}></td><td><select name=ctype><option ng-repeat=\"value in myOptions\" value={{value.id}} ng-selected=\"value.id==column.ctype\">{{value.label}}</option></select></td><td><textarea name=config jsoneditor>{{column.config}}</textarea></td></tr></tbody></table></div><div class=modal-footer><button type=button class=\"btn btn-primary\" data-ok=modal ng-click=saveColumnMap()>保存</button> <button type=button class=\"btn btn-default\" data-dismiss=modal>取消</button></div></div></div></div><div class=search-wrap><div class=search-content><form id=myform_search method=post><table class=\"table table-striped\"><tbody><tr><td ng-repeat=\"column in columns\">{{column.mapname}}:<input name={{column.name}} value={{condition[column.name]}}></td></tr></tbody></table><input class=\"btn btn-primary btn-sm\" value=搜索 type=submit ng-click=searchOnclick()></form></div></div><div class=result-wrap><form name=myform id=myform method=post><div class=result-title><div class=result-list><a ng-click=addDataOnclick() href=javascript:;><i class=icon-font></i>新增数据</a> <a href=javascript:void(0) ng-click=modifyDataOnclick()><i class=icon-font></i>批量更新</a> <a href=javascript:void(0) ng-click=deleteDataOnclick()><i class=icon-font></i>批量删除</a></div></div><div class=result-content><table class=\"table table-striped table-bordered\"><thead><tr><th class=tc width=5%><input class=allChoose type=checkbox ng-model=selectAll></th><th ng-repeat=\"column in columns\">{{column.mapname}}</th></tr></thead><tbody><tr ng-repeat=\"item in list\" class=J-data-list><td class=tc><input type=checkbox ng-checked=selectAll class=J-selected><input type=hidden name=_id value=\"{{item._id}}\"></td><td ng-repeat=\"column in columns\"><input ng-if=\"column.ctype==1\" name={{column.name}} value={{item[column.name]}}><select ng-if=\"column.ctype==2\" name={{column.name}} d={{item[column.name]}}><option ng-repeat=\"value in column.configValue\" value={{value.v}} ng-selected=\"value.v==item[column.name]\">{{value.n}}</option></select><textarea ng-if=\"column.ctype==3\" name={{column.name}} editor ng-click=openEditor(this)>{{item[column.name]}}</textarea></td></tr></tbody></table></div><div class=result-title><div class=result-list><a ng-click=addDataOnclick(); href=javascript:;><i class=icon-font></i>新增数据</a> <a href=javascript:void(0) ng-click=modifyDataOnclick()><i class=icon-font></i>批量更新</a> <a href=javascript:void(0) ng-click=deleteDataOnclick()><i class=icon-font></i>批量删除</a></div></div><pagination total-items=pagination.totalItems ng-hide=\"pagination.totalPage==1\" items-per-page=pagination.itemsPerPage boundary-links=true ng-model=pagination.currentPage ng-change=pageChanged() previous-text=上一页 next-text=下一页 first-text=\"<<\" last-text=\">>\" max-size=10></pagination></form><form name=myform id=myform_add method=post ng-show=showAdd><div class=result-content><table class=\"table table-striped table-bordered\" width=100%><tbody><tr><th class=tc width=5%><input class=allChoose type=checkbox ng-model=selectAllAdd></th><th ng-repeat=\"column in columns\">{{column.mapname}}</th></tr><tr ng-repeat=\"item in [0,1,2]\" class=J-data-list><td class=tc><input type=checkbox ng-checked=selectAllAdd class=J-selected></td><td ng-repeat=\"column in columns\"><input ng-if=\"column.ctype==1\" name={{column.name}} value={{item[column.name]}}><select ng-if=\"column.ctype==2\" name={{column.name}} d={{item[column.name]}}><option ng-repeat=\"value in column.configValue\" value={{value.v}} ng-selected=\"value.v==item[column.name]\">{{value.n}}</option></select><textarea ng-if=\"column.ctype==3\" name={{column.name}} editor></textarea></td></tr></tbody></table></div><button type=button class=\"btn btn-primary btn-lg\" ng-click=submitData()>提交</button> <button type=button class=\"btn btn-default btn-lg\" ng-click=\"showAdd=false\">取消</button></form></div>"
   );
 
 
@@ -545,7 +556,7 @@ angular.module('dashboardApp').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('views/jsoneditor.html',
-    "<div class=\"modal fade\" tabindex=-1 role=dialog aria-labelledby=myModalLabel aria-hidden=true><div class=modal-dialog style=width:1200px><div class=modal-content><div class=modal-header><button type=button class=close data-dismiss=modal aria-label=Close><span aria-hidden=true>&times;</span></button><h5 class=modal-title>内容编辑</h5></div><div class=modal-body><div class=\"json-editor expanded\"></div></div><div class=modal-footer><button type=button class=\"btn btn-default btn-lg\" data-dismiss=modal>关闭</button></div></div></div></div>"
+    "<div class=\"modal fade\" tabindex=-1 role=dialog aria-labelledby=myModalLabel aria-hidden=true><div class=modal-dialog style=width:1200px><div class=modal-content><div class=modal-header><button type=button class=close data-dismiss=modal aria-label=Close><span aria-hidden=true>&times;</span></button><h5 class=modal-title>内容编辑</h5></div><div class=modal-body><div class=\"json-editor expanded\"></div></div><div class=modal-footer><button type=button class=\"btn btn-default\" data-dismiss=modal>关闭</button></div></div></div></div>"
   );
 
 

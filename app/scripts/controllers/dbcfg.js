@@ -9,7 +9,7 @@
  */
 angular.module('dashboardApp')
   .controller('DbCfgCtrl', ['$scope','$rootScope','$http','$q','$routeParams','$location' ,function ($scope, $rootScope, $http, $q,$routeParams,$location) {
-    
+
     // $scope.htmlcontent = 'test';
     //         $scope.disabled = false;
 
@@ -28,7 +28,11 @@ angular.module('dashboardApp')
 
         var apiUrl = 'http://'+location.host.split(':')[0]+':3000/dbcfg';
         $scope.condition = {};
-
+        $scope.pagination = {
+            totalItems:0,
+            currentPage: 1,
+            totalPage:1
+        }
         $scope.showAdd = false;
 
         $scope.myOptions = [
@@ -53,7 +57,7 @@ angular.module('dashboardApp')
                     type: type||"error"
                 },
                 time: 3000,
-            });                    
+            });
         }
         function dealData(param){
             var defer = $q.defer();
@@ -72,11 +76,12 @@ angular.module('dashboardApp')
 
             return defer.promise;
         }
-        function queryData() {       
+        function queryData() {
             dealData({
                 op:'query',
                 table: $routeParams.table,
-                condition:JSON.stringify($scope.condition)
+                condition:JSON.stringify($scope.condition),
+                pagination:JSON.stringify($scope.pagination),
             }).then(function(data){
                 if (data.result) {
                     var columns = data.result.columns;
@@ -88,6 +93,7 @@ angular.module('dashboardApp')
                     $scope.columns = columns;
                     $scope.list = data.result.list;
                     $scope.condition = data.result.condition;
+                    $scope.pagination = data.result.pagination;
                     $scope.showAdd = false;
                 } else {
                     onMsgBox(data.error.msg,'error');
@@ -219,5 +225,9 @@ angular.module('dashboardApp')
                     onMsgBox(data.error.msg,'error');
                 }
             })
+        }
+
+        $scope.pageChanged = function() {
+            queryData();
         }
   }]);
